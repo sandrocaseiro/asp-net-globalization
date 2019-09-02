@@ -2,9 +2,7 @@
     ViewData["Title"] = ViewBag.PageTitle;
 }
 
-@inject IStringLocalizer Localizer
-
 <div class="text-center">
-    <h1 class="display-4">@Localizer["Welcome_Title"]</h1>
+    <h1 class="display-4">@Resource.Welcome_Title</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

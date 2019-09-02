@@ -1,0 +1,38 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="Newtonsoft.Json" #>
+<#@ import namespace="Newtonsoft.Json" #>
+<#@ import namespace="Newtonsoft.Json.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text" #>
+using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
+
+namespace <#= System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("NamespaceHint") #>
+{
+	public static class <#= Path.GetFileNameWithoutExtension(Host.TemplateFile) #>
+	{
+		private static IStringLocalizer stringLocalizer = null;
+
+		public static CultureInfo GetCurrentCulture() => Thread.CurrentThread.CurrentCulture;
+		public static IEnumerable<CultureInfo> GetAllCultures() => ((JsonStringLocalizer)stringLocalizer).GetAllCultures();
+
+		<#
+		Dictionary<string, Dictionary<string, string>> resource = null;
+		using (StreamReader reader = File.OpenText(Path.GetDirectoryName(Host.TemplateFile) + @"\Resource.json"))
+		{
+			var jObject = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+			resource = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(jObject.ToString());
+
+			foreach (var item in resource.Keys)
+			{
+				#>
+				public static string <#= item #> => stringLocalizer["<#= item #>"];
+				<#
+			}
+		}
+		#>
+	}
+}

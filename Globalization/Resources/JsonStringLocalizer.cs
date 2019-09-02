@@ -15,6 +15,8 @@ namespace Globalization.Resources
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _resource =
             new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
 
+        private readonly HashSet<string> _languages;
+
         public JsonStringLocalizer()
         {
             string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Resources/Resource.json");
@@ -22,6 +24,7 @@ namespace Globalization.Resources
             {
                 var jObject = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
                 _resource = JsonConvert.DeserializeObject<ConcurrentDictionary<string, ConcurrentDictionary<string, string>>>(jObject.ToString());
+                _languages = new HashSet<string>(_resource.SelectMany(r => r.Value).Select(r => r.Key).Distinct());
             }
         }
 
@@ -37,6 +40,11 @@ namespace Globalization.Resources
         public IStringLocalizer WithCulture(CultureInfo culture)
         {
             return this;
+        }
+
+        public IEnumerable<CultureInfo> GetAllCultures()
+        {
+            return _languages.Select(c => new CultureInfo(c));
         }
 
         private LocalizedString GetStringResource(string name, params object[] arguments)

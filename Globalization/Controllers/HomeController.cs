@@ -1,22 +1,15 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Globalization.Models;
-using Microsoft.Extensions.Localization;
+using Globalization.Resources;
 
 namespace Globalization.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IStringLocalizer _localizer;
-
-        public HomeController(IStringLocalizer localizer)
-        {
-            _localizer = localizer;
-        }
-
         public IActionResult Index()
         {
-            ViewBag.PageTitle = _localizer["Index_Page_Title"];
+            ViewBag.PageTitle = Resource.Index_Page_Title;
             return View();
         }
 

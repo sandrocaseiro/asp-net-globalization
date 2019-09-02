@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Globalization.Resources;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,13 +52,9 @@ namespace Globalization
                 app.UseHsts();
             }
 
+            app.UseStaticJsonLocalization();
             //App supported cultures
-            var supportedCultures = new[]
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("pt-BR"),
-            };
-
+            List<CultureInfo> supportedCultures = Resource.GetAllCultures().ToList();
             app.UseRequestLocalization(new RequestLocalizationOptions
             {
                 DefaultRequestCulture = new RequestCulture("en-US"),
@@ -65,7 +62,7 @@ namespace Globalization
                 SupportedCultures = supportedCultures,
                 // UI strings that we have localized.
                 SupportedUICultures = supportedCultures,
-                RequestCultureProviders = new List<IRequestCultureProvider> { new QueryStringRequestCultureProvider() }
+                RequestCultureProviders = new List<IRequestCultureProvider> { new RouteRequestCultureProvider() }
             });
 
             app.UseHttpsRedirection();
@@ -74,6 +71,10 @@ namespace Globalization
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "default-culture",
+                    template: "{culture}/{controller=Home}/{action=Index}/{id?}");
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
