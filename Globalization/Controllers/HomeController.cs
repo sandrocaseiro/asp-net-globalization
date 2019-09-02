@@ -9,7 +9,7 @@ namespace Globalization.Controllers
     {
         private readonly IStringLocalizer _localizer;
 
-        public HomeController(IStringLocalizer<SharedResource> localizer)
+        public HomeController(IStringLocalizer localizer)
         {
             _localizer = localizer;
         }
